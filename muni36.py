@@ -18,7 +18,7 @@ def get_html(stop):
 def parse(html):
     soup = BeautifulSoup(html, 'html.parser')
     minutes = [
-                int(td.get_text()) 
+                0 if 'Arriving' in td.get_text() else int(td.get_text())
                 for td in soup.find_all(class_='adapredictMinTD') 
                 if 'minutes' not in td.get_text()
               ]
@@ -37,7 +37,11 @@ def to_datetimes(parsed):
     base_dt, minutes = parsed
     return [base_dt + datetime.timedelta(minutes=m) for m in minutes]
 
-minutes = parse(get_html(sys.argv[1]))
-print(minutes)
+html = get_html(sys.argv[1])
+#html = open('arriving.html', 'r').read()
+minutes = parse(html)
+#print(minutes)
 dts = to_datetimes(minutes)
-print(dts)
+#print(dts)
+for dt in dts:
+    print(dt.strftime("%I:%M %p"))

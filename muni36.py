@@ -37,11 +37,15 @@ def to_datetimes(parsed):
     base_dt, minutes = parsed
     return [base_dt + datetime.timedelta(minutes=m) for m in minutes]
 
-html = get_html(sys.argv[1])
-#html = open('arriving.html', 'r').read()
-minutes = parse(html)
-#print(minutes)
-dts = to_datetimes(minutes)
-#print(dts)
-for dt in dts:
-    print(dt.strftime("%I:%M %p"))
+def get_times(stop):
+    return [
+            (int ((dt - datetime.datetime.now()).total_seconds() // 60), dt)
+            for dt in to_datetimes(parse(get_html(stop)))
+           ]
+
+
+if __name__ == '__main__':
+    dts = get_times(sys.argv[1])
+    #print(dts)
+    for minutes, dt in dts:
+        print('in', minutes, 'minutes (', dt.strftime("%I:%M %p"), ')')
